@@ -1,0 +1,78 @@
+.voice-card {
+  margin-top: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: rgba(15, 17, 23, 0.92);
+}
+
+.status {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  color: rgba(232, 236, 244, 0.9);
+}
+
+.warn {
+  color: #fecaca;
+  margin: 0;
+}
+
+.time-bar {
+  margin-bottom: 0.35rem;
+  border-radius: 4px;
+}
+
+.timer-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin-bottom: 0.65rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.cap {
+  font-size: 0.8rem;
+  opacity: 0.65;
+}
+
+.wave-live {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px;
+  height: 72px;
+  margin-bottom: 1rem;
+  padding: 0 0.25rem;
+}
+
+.live-bar {
+  width: 6px;
+  min-height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #93c5fd, #6366f1);
+  align-self: flex-end;
+  transition: height 50ms linear;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.actions button mat-icon {
+  margin-right: 0.25rem;
+  vertical-align: middle;
+}
+
+.processing {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: rgba(232, 236, 244, 0.85);
+}

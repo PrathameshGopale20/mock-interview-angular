@@ -1,0 +1,18 @@
+<div class="shell">
+  <header class="topbar">
+    <a routerLink="/dashboard" class="brand">Mock Interview</a>
+    <nav>
+      @if (auth.isLoggedIn()) {
+        <a routerLink="/dashboard">Dashboard</a>
+        <a routerLink="/interview/setup">New interview</a>
+        <button type="button" class="linkish" (click)="logout()">Sign out</button>
+      } @else {
+        <a routerLink="/login">Sign in</a>
+        <a routerLink="/register">Register</a>
+      }
+    </nav>
+  </header>
+  <main>
+    <router-outlet />
+  </main>
+</div>

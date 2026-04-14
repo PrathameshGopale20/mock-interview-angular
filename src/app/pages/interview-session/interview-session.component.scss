@@ -1,0 +1,169 @@
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1rem 1rem 3rem;
+}
+
+.empty-questions {
+  margin-bottom: 1.5rem;
+}
+
+.empty-questions p {
+  margin: 0 0 0.75rem;
+  line-height: 1.5;
+}
+
+.empty-questions .btn {
+  margin-top: 0.5rem;
+}
+
+.back {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+}
+
+.back a {
+  color: var(--mit-accent);
+  text-decoration: none;
+}
+
+.head h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.muted {
+  color: var(--mit-muted);
+  margin: 0.35rem 0 1rem;
+  font-size: 0.9rem;
+}
+
+.progress {
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin: 0 0 0.75rem;
+  color: var(--mit-accent);
+}
+
+.footnote {
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+}
+
+.questions {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.q-card h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.q-head {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.5rem;
+}
+
+.badge {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.45rem;
+  border-radius: 6px;
+  background: var(--mit-badge);
+  color: var(--mit-badge-text);
+}
+
+.badge.coding {
+  background: rgba(99, 102, 241, 0.25);
+  color: #c7d2fe;
+}
+
+.q-text {
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--mit-border);
+  background: var(--mit-input-bg);
+  color: inherit;
+  font-family: inherit;
+  resize: vertical;
+}
+
+textarea.code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+}
+
+.row {
+  margin-top: 0.65rem;
+}
+
+.hint {
+  margin: 0.65rem 0 0;
+  font-size: 0.85rem;
+  color: var(--mit-muted);
+}
+
+.finalize h3,
+.result h3 {
+  margin: 0 0 0.5rem;
+}
+
+.finalize {
+  margin-top: 1.5rem;
+}
+
+.finalize code {
+  font-size: 0.8em;
+}
+
+.result {
+  margin-top: 1.5rem;
+}
+
+.result dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 1rem;
+  margin: 0 0 1rem;
+}
+
+.result dt {
+  color: var(--mit-muted);
+  margin: 0;
+}
+
+.result dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.result .big {
+  font-size: 1.5rem;
+  color: var(--mit-accent);
+}
+
+.result .btn {
+  margin-top: 1rem;
+  display: inline-flex;
+}
+
+code {
+  background: var(--mit-code-bg);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.85em;
+}

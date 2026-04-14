@@ -1,0 +1,34 @@
+<section class="page">
+  <h1>Interview setup</h1>
+  <p class="muted">Choose stack and difficulty — matches <code>POST /api/interviews/setup</code>.</p>
+
+  @if (errorMessage) {
+    <div class="alert error">{{ errorMessage }}</div>
+  }
+
+  <div class="card form-card">
+    <label>
+      <span>Language</span>
+      <select [(ngModel)]="languageId" name="languageId">
+        <option [ngValue]="null">Select…</option>
+        @for (lang of languages; track lang.id) {
+          <option [ngValue]="lang.id">{{ lang.name }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      <span>Difficulty</span>
+      <select [(ngModel)]="levelId" name="levelId">
+        <option [ngValue]="null">Select…</option>
+        @for (lv of levels; track lv.id) {
+          <option [ngValue]="lv.id">{{ lv.name }}</option>
+        }
+      </select>
+    </label>
+
+    <button type="button" class="btn primary" (click)="start()" [disabled]="busy">
+      {{ busy ? 'Starting…' : 'Start interview' }}
+    </button>
+  </div>
+</section>

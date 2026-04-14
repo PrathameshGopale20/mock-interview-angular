@@ -1,0 +1,32 @@
+<section class="page">
+  <p class="back"><a routerLink="/dashboard">← Dashboard</a></p>
+
+  @if (busy) {
+    <p class="muted">Computing your scores…</p>
+  } @else if (error) {
+    <div class="card alert error">{{ error }}</div>
+    <a routerLink="/interview/setup" class="btn primary">Interview setup</a>
+  } @else if (evaluation) {
+    <header class="head">
+      <h1>Interview complete</h1>
+      <p class="muted">Session #{{ evaluation.interviewSessionId }}</p>
+    </header>
+
+    <div class="card result">
+      <h3>Results</h3>
+      <dl>
+        <dt>Answer score (AI content)</dt>
+        <dd>{{ evaluation.answerScore }}</dd>
+        <dt>Voice score</dt>
+        <dd>{{ evaluation.voiceScore }}</dd>
+        <dt>Code score</dt>
+        <dd>{{ evaluation.codeScore }}</dd>
+        <dt>Final score</dt>
+        <dd class="big">{{ evaluation.finalScore }}</dd>
+      </dl>
+      <p><strong>Answer feedback</strong> — {{ evaluation.feedback }}</p>
+      <p><strong>Voice suggestions</strong> — {{ evaluation.improvementSuggestions }}</p>
+      <a routerLink="/dashboard" class="btn secondary">Back to dashboard</a>
+    </div>
+  }
+</section>

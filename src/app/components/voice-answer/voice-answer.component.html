@@ -1,0 +1,50 @@
+<mat-card class="voice-card" appearance="outlined">
+  @if (!browserSupported) {
+    <p class="warn">Use Chrome or Edge with microphone access. MediaRecorder + Web Speech API required.</p>
+  } @else {
+    <p class="status">{{ statusLine }}</p>
+
+    @if (state === 'recording') {
+      <mat-progress-bar mode="determinate" [value]="progressFraction * 100" class="time-bar"></mat-progress-bar>
+      <div class="timer-row">
+        <span class="timer">{{ formattedTimer }}</span>
+        <span class="cap">/ 60s max</span>
+      </div>
+      <div class="wave-live" aria-hidden="true">
+        @for (h of barHeights; track $index) {
+          <div class="live-bar" [style.height.%]="h"></div>
+        }
+      </div>
+    }
+
+    <div class="actions">
+      @if (state === 'idle') {
+        <button mat-flat-button color="primary" type="button" (click)="startRecording()">
+          <mat-icon>fiber_manual_record</mat-icon>
+          Start recording
+        </button>
+      }
+
+      @if (state === 'recording') {
+        <button mat-stroked-button color="warn" type="button" (click)="stopRecording()">
+          <mat-icon>stop</mat-icon>
+          Stop recording
+        </button>
+      }
+
+      @if (state === 'ready_to_submit') {
+        <button mat-flat-button color="accent" type="button" (click)="submitAnswer()">
+          <mat-icon>send</mat-icon>
+          Submit answer
+        </button>
+      }
+
+      @if (state === 'submitting') {
+        <div class="processing">
+          <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+          <span>Sending…</span>
+        </div>
+      }
+    </div>
+  }
+</mat-card>

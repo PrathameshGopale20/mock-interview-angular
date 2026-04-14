@@ -1,0 +1,64 @@
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.muted {
+  color: var(--mit-muted);
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+}
+
+.empty {
+  text-align: center;
+  padding: 2rem;
+}
+
+.empty p {
+  margin: 0 0 1rem;
+  color: var(--mit-muted);
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--mit-border);
+}
+
+th {
+  color: var(--mit-muted);
+  font-weight: 600;
+}
+
+.feedback {
+  max-width: 280px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -1,0 +1,67 @@
+<section class="page">
+  <header class="head">
+    <div>
+      <h1>Dashboard</h1>
+      <p class="muted">Signed in as {{ auth.user()?.email }}</p>
+    </div>
+    <a routerLink="/interview/setup" class="btn primary">Start mock interview</a>
+  </header>
+
+  @if (loading) {
+    <p class="muted">Loading history…</p>
+  } @else if (loadError) {
+    <div class="alert error">{{ loadError }}</div>
+  } @else if (history.length === 0) {
+    <div class="empty card">
+      <p>No interviews yet. Start your first session.</p>
+      <a routerLink="/interview/setup" class="btn primary">Start mock interview</a>
+    </div>
+  } @else {
+    <div class="table-wrap card">
+      <table>
+        <thead>
+          <tr>
+            <th>When</th>
+            <th>Language</th>
+            <th>Level</th>
+            <th>Answer</th>
+            <th>Voice</th>
+            <th>Final</th>
+            <th>Feedback</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of history; track row.interviewId) {
+            <tr>
+              <td>{{ row.startedAt | date: 'medium' }}</td>
+              <td>{{ row.languageName }}</td>
+              <td>{{ row.levelName }}</td>
+              <td>
+                @if (row.answerScore != null) {
+                  {{ row.answerScore }}
+                } @else {
+                  <span class="muted">—</span>
+                }
+              </td>
+              <td>
+                @if (row.voiceScore != null) {
+                  {{ row.voiceScore }}
+                } @else {
+                  <span class="muted">—</span>
+                }
+              </td>
+              <td>
+                @if (row.finalScore != null) {
+                  {{ row.finalScore }}
+                } @else {
+                  <span class="muted">—</span>
+                }
+              </td>
+              <td class="feedback">{{ row.feedback ?? '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

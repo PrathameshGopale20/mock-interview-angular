@@ -1,0 +1,100 @@
+:root {
+  --mit-bg: #0f1117;
+  --mit-topbar: #161b26;
+  --mit-card: #1a1f2b;
+  --mit-border: #2a3142;
+  --mit-muted: #9aa3b5;
+  --mit-accent: #7c9cff;
+  --mit-input-bg: #12151c;
+  --mit-code-bg: rgba(255, 255, 255, 0.06);
+  --mit-badge: rgba(255, 255, 255, 0.08);
+  --mit-badge-text: #e2e6ef;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    Roboto,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Ubuntu,
+    sans-serif;
+  background: var(--mit-bg);
+  color: #e8ecf4;
+  line-height: 1.45;
+}
+
+.card {
+  background: var(--mit-card);
+  border: 1px solid var(--mit-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn.primary {
+  background: linear-gradient(135deg, #5b7cfa, #6366f1);
+  color: #fff;
+}
+
+.btn.primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn.secondary {
+  background: transparent;
+  border-color: var(--mit-border);
+  color: var(--mit-muted);
+}
+
+.alert {
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.alert.error {
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  color: #fecaca;
+}
+
+button.primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(135deg, #5b7cfa, #6366f1);
+  color: #fff;
+}
+
+button.primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

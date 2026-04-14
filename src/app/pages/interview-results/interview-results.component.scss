@@ -1,0 +1,57 @@
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1rem 1rem 3rem;
+}
+
+.back {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+}
+
+.back a {
+  color: var(--mit-accent);
+  text-decoration: none;
+}
+
+.head h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.muted {
+  color: var(--mit-muted);
+  margin: 0.35rem 0 1rem;
+  font-size: 0.9rem;
+}
+
+.result h3 {
+  margin: 0 0 0.5rem;
+}
+
+.result dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 1rem;
+  margin: 0 0 1rem;
+}
+
+.result dt {
+  color: var(--mit-muted);
+  margin: 0;
+}
+
+.result dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.result .big {
+  font-size: 1.5rem;
+  color: var(--mit-accent);
+}
+
+.result .btn {
+  margin-top: 1rem;
+  display: inline-flex;
+}
