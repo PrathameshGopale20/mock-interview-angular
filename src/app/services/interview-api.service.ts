@@ -4,10 +4,17 @@ import { map, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
   AuthResponse,
+  CodeRunRequest,
+  CodeRunResponse,
   CodeSubmitRequest,
   CodeSubmitResponse,
   EvaluationResultDto,
   InterviewHistoryItemDto,
+  InterviewQuestionsResponseDto,
+  InterviewReviewResponseDto,
+  InterviewStartRequest,
+  ScoreTrendPointDto,
+  GenerateQuestionsRequest,
   InterviewSetupRequest,
   InterviewSetupResponse,
   LanguageDto,
@@ -45,9 +52,19 @@ export class InterviewApiService {
     return this.http.post<InterviewSetupResponse>(`${this.base}/interviews/setup`, body);
   }
 
+  startInterview(body: InterviewStartRequest): Observable<InterviewSetupResponse> {
+    return this.http.post<InterviewSetupResponse>(`${this.base}/interview/start`, body);
+  }
+
   /** Confirms interview session exists for the logged-in user. */
   getInterviewSession(interviewSessionId: number): Observable<InterviewSetupResponse> {
     return this.http.get<InterviewSetupResponse>(`${this.base}/interviews/${interviewSessionId}`);
+  }
+
+  getInterviewQuestions(interviewSessionId: number): Observable<InterviewQuestionsResponseDto> {
+    return this.http.get<InterviewQuestionsResponseDto>(
+      `${this.base}/interview/${interviewSessionId}/questions`,
+    );
   }
 
   getQuestions(languageId: number, levelId: number): Observable<QuestionDto[]> {
@@ -80,14 +97,29 @@ export class InterviewApiService {
     return this.http.post<CodeSubmitResponse>(`${this.base}/coding/submit`, body);
   }
 
+  runCode(body: CodeRunRequest): Observable<CodeRunResponse> {
+    return this.http.post<CodeRunResponse>(`${this.base}/coding/run`, body);
+  }
+
   finalizeInterview(interviewSessionId: number): Observable<EvaluationResultDto> {
-    return this.http.post<EvaluationResultDto>(
-      `${this.base}/evaluation/finalize/${interviewSessionId}`,
-      {},
+    return this.http.post<EvaluationResultDto>(`${this.base}/interview/finalize/${interviewSessionId}`, {});
+  }
+
+  getInterviewReview(interviewSessionId: number): Observable<InterviewReviewResponseDto> {
+    return this.http.get<InterviewReviewResponseDto>(
+      `${this.base}/interview/${interviewSessionId}/review`,
     );
   }
 
   getDashboardHistory(): Observable<InterviewHistoryItemDto[]> {
     return this.http.get<InterviewHistoryItemDto[]>(`${this.base}/dashboard/history`);
+  }
+
+  getScoreTrends(): Observable<ScoreTrendPointDto[]> {
+    return this.http.get<ScoreTrendPointDto[]>(`${this.base}/dashboard/trends`);
+  }
+
+  generateQuestions(body: GenerateQuestionsRequest): Observable<QuestionDto[]> {
+    return this.http.post<QuestionDto[]>(`${this.base}/questions/generate`, body);
   }
 }

@@ -1,6 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { VoiceAnswerComponent } from '../../components/voice-answer/voice-answer.component';
 import {
@@ -9,12 +8,17 @@ import {
   JUST_STARTED_INTERVIEW_KEY,
 } from '../../core/interview-context.service';
 import { InterviewApiService } from '../../services/interview-api.service';
-import { InterviewSetupResponse, QuestionDto, QuestionType } from '../../models/api.models';
+import {
+  InterviewQuestionItemDto,
+  InterviewQuestionsResponseDto,
+  InterviewSetupResponse,
+  QuestionType,
+} from '../../models/api.models';
 
 @Component({
   selector: 'app-interview-session',
   standalone: true,
-  imports: [FormsModule, RouterLink, VoiceAnswerComponent, MatSnackBarModule],
+  imports: [RouterLink, VoiceAnswerComponent, MatSnackBarModule],
   templateUrl: './interview-session.component.html',
   styleUrl: './interview-session.component.scss',
 })
@@ -28,15 +32,12 @@ export class InterviewSessionComponent implements OnInit {
   readonly QuestionType = QuestionType;
 
   ctx: InterviewContext | null = this.ctxService.load();
-  questions: QuestionDto[] = [];
+  theoryQuestions: InterviewQuestionItemDto[] = [];
+  codingQuestion: InterviewQuestionItemDto | null = null;
   /** Index of the question currently shown (one at a time). */
   stepIndex = 0;
   loading = true;
   loadError = '';
-
-  codeDraft: Record<number, string> = {};
-  lastMsg: Record<number, string> = {};
-  codeSubmittingId: number | null = null;
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -64,7 +65,7 @@ export class InterviewSessionComponent implements OnInit {
           levelName: session.levelName,
         });
         this.ctx = this.ctxService.load();
-        this.loadQuestionsForSession(session.languageId, session.levelId);
+        this.loadLockedQuestions(id);
       },
       error: () => {
         this.ctxService.clear();
@@ -86,82 +87,48 @@ export class InterviewSessionComponent implements OnInit {
     if (!this.ctx) {
       return;
     }
-    this.loadQuestionsForSession(this.ctx.languageId, this.ctx.levelId);
+    this.loadLockedQuestions(this.ctx.interviewId);
   }
 
-  private loadQuestionsForSession(languageId: number, levelId: number): void {
-    this.api.getQuestions(languageId, levelId).subscribe({
-      next: (q) => {
-        this.questions = q;
-        for (const x of q) {
-          this.codeDraft[x.id] = '';
-        }
+  private loadLockedQuestions(interviewId: number): void {
+    this.api.getInterviewQuestions(interviewId).subscribe({
+      next: (res: InterviewQuestionsResponseDto) => {
+        this.theoryQuestions = res.questions.filter((q) => q.questionType === QuestionType.Text);
+        this.codingQuestion =
+          res.questions.find((q) => q.questionType === QuestionType.Coding) ?? null;
         this.stepIndex = 0;
         this.loading = false;
       },
       error: () => {
-        this.loadError = 'Failed to load questions.';
+        this.loadError = 'Failed to load interview questions.';
         this.loading = false;
       },
     });
   }
 
-  get currentQuestion(): QuestionDto | null {
-    return this.questions[this.stepIndex] ?? null;
+  get currentQuestion(): InterviewQuestionItemDto | null {
+    return this.theoryQuestions[this.stepIndex] ?? null;
   }
 
   get progressLabel(): string {
-    if (this.questions.length === 0) {
+    if (this.theoryQuestions.length === 0) {
       return '';
     }
-    return `Question ${this.stepIndex + 1} of ${this.questions.length}`;
+    return `Question ${this.stepIndex + 1} of ${this.theoryQuestions.length}`;
   }
 
-  private goToNextOrResults(): void {
+  private goToNextOrCodingRound(): void {
     if (!this.ctx) {
       return;
     }
-    if (this.stepIndex < this.questions.length - 1) {
+    if (this.stepIndex < this.theoryQuestions.length - 1) {
       this.stepIndex++;
     } else {
-      void this.router.navigate(['/interview', this.ctx.interviewId, 'results']);
+      void this.router.navigate(['/interview', this.ctx.interviewId, 'coding']);
     }
   }
 
   onVoiceSubmitted(): void {
-    this.goToNextOrResults();
-  }
-
-  submitCode(q: QuestionDto): void {
-    if (!this.ctx || this.codeSubmittingId != null) {
-      return;
-    }
-    const code = (this.codeDraft[q.id] ?? '').trim();
-    if (!code) {
-      this.lastMsg[q.id] = 'Paste your code.';
-      return;
-    }
-    this.codeSubmittingId = q.id;
-    this.lastMsg[q.id] = '';
-    this.api
-      .submitCode({
-        interviewSessionId: this.ctx.interviewId,
-        questionId: q.id,
-        sourceCode: code,
-      })
-      .subscribe({
-        next: (res) => {
-          this.codeSubmittingId = null;
-          this.lastMsg[q.id] = `Tests: ${res.testCasesPassed}/${res.testCasesTotal} (${res.codeScorePercent}%)`;
-          this.snackBar.open('Code submitted.', 'OK', { duration: 2500 });
-          this.goToNextOrResults();
-        },
-        error: (err: { error?: { message?: string } }) => {
-          this.codeSubmittingId = null;
-          const msg = err?.error?.message ?? 'Code run failed.';
-          this.lastMsg[q.id] = msg;
-          this.snackBar.open(msg, 'Dismiss', { duration: 8000 });
-        },
-      });
+    this.goToNextOrCodingRound();
   }
 }

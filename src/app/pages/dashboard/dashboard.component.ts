@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { InterviewApiService } from '../../services/interview-api.service';
-import { InterviewHistoryItemDto } from '../../models/api.models';
+import { InterviewHistoryItemDto, ScoreTrendPointDto } from '../../models/api.models';
 import { DatePipe } from '@angular/common';
 
 @Component({
@@ -17,6 +17,7 @@ export class DashboardComponent implements OnInit {
   readonly auth = inject(AuthService);
 
   history: InterviewHistoryItemDto[] = [];
+  trends: ScoreTrendPointDto[] = [];
   loadError = '';
   loading = true;
 
@@ -29,6 +30,12 @@ export class DashboardComponent implements OnInit {
       error: () => {
         this.loadError = 'Could not load interview history.';
         this.loading = false;
+      },
+    });
+    this.api.getScoreTrends().subscribe({
+      next: (t) => (this.trends = t),
+      error: () => {
+        /* optional */
       },
     });
   }

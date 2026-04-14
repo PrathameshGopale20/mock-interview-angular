@@ -1,0 +1,92 @@
+<section class="page">
+  <p class="back"><a routerLink="/dashboard">← Dashboard</a></p>
+
+  <header class="head">
+    <h1>Detailed review</h1>
+    <p class="muted">{{ ctx?.languageName }} · {{ ctx?.levelName }}</p>
+  </header>
+
+  @if (loading) {
+    <div class="loading">
+      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+      <span class="muted">Loading review…</span>
+    </div>
+  } @else if (!review) {
+    <mat-card appearance="outlined" class="card">
+      <p class="muted">No review data available.</p>
+    </mat-card>
+  } @else {
+    <mat-card appearance="outlined" class="card summary">
+      <h2>Summary</h2>
+      <div class="grid">
+        <div><div class="k">Total questions</div><div class="v">{{ review.summary.totalQuestions }}</div></div>
+        <div><div class="k">Avg answer</div><div class="v">{{ review.summary.averageAnswerScore }}%</div></div>
+        <div><div class="k">Avg voice</div><div class="v">{{ review.summary.averageVoiceScore }}%</div></div>
+        <div><div class="k">Code</div><div class="v">{{ review.summary.codeScore }}%</div></div>
+        <div class="final"><div class="k">Final score</div><div class="v">{{ review.summary.finalScore }}%</div></div>
+      </div>
+      @if (review.summary.overallFeedback) {
+        <p class="muted"><strong>AI feedback:</strong> {{ review.summary.overallFeedback }}</p>
+      }
+      @if (review.summary.improvementSuggestions) {
+        <p class="muted"><strong>Suggestions:</strong> {{ review.summary.improvementSuggestions }}</p>
+      }
+    </mat-card>
+
+    <mat-card appearance="outlined" class="card">
+      <h2>Theory questions</h2>
+      <mat-accordion multi="true">
+        @for (q of review.theory; track q.questionId) {
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Q{{ q.order }} · Answer {{ q.answerScore }}% · Voice {{ q.voiceScore }}%
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p class="q">{{ q.questionText }}</p>
+            @if (q.answerFeedback) { <p class="muted"><strong>What was correct:</strong> {{ q.answerFeedback }}</p> }
+            @if (q.voiceFeedback) { <p class="muted"><strong>Improve:</strong> {{ q.voiceFeedback }}</p> }
+          </mat-expansion-panel>
+        }
+      </mat-accordion>
+    </mat-card>
+
+    @if (review.coding) {
+      <mat-card appearance="outlined" class="card">
+        <h2>Coding</h2>
+        <p class="q">{{ review.coding.problemStatement }}</p>
+        <p class="muted">
+          <strong>Score:</strong> {{ review.coding.codeScore }}%
+          · <strong>Tests:</strong> {{ review.coding.testCasesPassed }}/{{ review.coding.testCasesTotal }}
+        </p>
+        @if (review.coding.suggestions) {
+          <p class="muted"><strong>Suggestions:</strong> {{ review.coding.suggestions }}</p>
+        }
+        @if (review.coding.testCases?.length) {
+          <div class="tests">
+            @for (tc of review.coding.testCases; track $index) {
+              <div class="tc" [class.pass]="tc.passed" [class.fail]="!tc.passed">
+                <div class="line">
+                  <span class="badge" [class.pass]="tc.passed" [class.fail]="!tc.passed">
+                    {{ tc.passed ? 'PASS' : 'FAIL' }}
+                  </span>
+                  <span class="muted">stdin:</span> <code>{{ tc.stdin ?? '' }}</code>
+                </div>
+                <div class="muted">expected:</div>
+                <pre class="pre">{{ tc.expectedOutput }}</pre>
+                <div class="muted">actual:</div>
+                <pre class="pre">{{ tc.actualOutput ?? '' }}</pre>
+              </div>
+            }
+          </div>
+        }
+      </mat-card>
+    }
+
+    <div class="actions">
+      <a mat-stroked-button routerLink="/dashboard">Back to dashboard</a>
+      <a mat-flat-button color="primary" routerLink="/interview/setup">Start new interview</a>
+    </div>
+  }
+</section>
+

@@ -27,8 +27,19 @@
       </select>
     </label>
 
-    <button type="button" class="btn primary" (click)="start()" [disabled]="busy">
-      {{ busy ? 'Starting…' : 'Start interview' }}
-    </button>
+    <div class="row-actions">
+      <button type="button" class="btn primary" (click)="start()" [disabled]="busy || generateBusy">
+        {{ busy ? 'Starting…' : 'Start interview' }}
+      </button>
+      <button
+        type="button"
+        class="btn secondary"
+        (click)="generateAiQuestions()"
+        [disabled]="busy || generateBusy"
+        title="Requires OpenAI API key in backend appsettings"
+      >
+        {{ generateBusy ? 'Generating…' : 'Add AI questions (OpenAI)' }}
+      </button>
+    </div>
   </div>
 </section>

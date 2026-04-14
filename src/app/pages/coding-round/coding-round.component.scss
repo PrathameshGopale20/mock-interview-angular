@@ -1,0 +1,61 @@
+.page {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.head {
+  margin: 8px 0 12px;
+}
+
+.card {
+  margin: 12px 0;
+  padding: 12px;
+}
+
+.problem {
+  white-space: pre-wrap;
+}
+
+.editor-row {
+  height: 420px;
+}
+
+.io {
+  margin-top: 12px;
+}
+
+.stdin {
+  width: 100%;
+  font: inherit;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.2);
+  color: inherit;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  align-items: center;
+}
+
+.out {
+  margin-top: 12px;
+}
+
+.out.error .pre {
+  border-color: rgba(255, 80, 80, 0.5);
+}
+
+.pre {
+  max-height: 220px;
+  overflow: auto;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.25);
+}
+

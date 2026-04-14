@@ -12,15 +12,15 @@
     <p class="muted">Loading questions…</p>
   } @else if (loadError) {
     <div class="alert error">{{ loadError }}</div>
-  } @else if (questions.length === 0) {
+  } @else if (theoryQuestions.length === 0) {
     <div class="card empty-questions">
       <p>
-        No questions are configured in the database for
+        No locked questions were found for
         <strong>{{ ctx?.languageName }} · {{ ctx?.levelName }}</strong>.
       </p>
       <p class="muted">
-        Start the API after updating seed data, or pick another language/level. Admins can add rows in the
-        <code>Questions</code> table for this pair.
+        Start a new interview from setup. If this keeps happening, ensure the API can select 10 theory questions and 1
+        coding question for this language/difficulty.
       </p>
       <a routerLink="/interview/setup" class="btn primary">Change setup</a>
     </div>
@@ -30,52 +30,21 @@
 
     <article class="card q-card">
       <div class="q-head">
-        <span class="badge" [class.coding]="q.questionType === QuestionType.Coding">
-          {{ q.questionType === QuestionType.Coding ? 'Coding' : 'Voice' }}
-        </span>
+        <span class="badge">Voice</span>
         <h2>Question {{ stepIndex + 1 }}</h2>
       </div>
       <p class="q-text">{{ q.text }}</p>
 
-      @if (q.questionType === QuestionType.Text) {
-        @if (ctx) {
-          <app-voice-answer
-            [interviewSessionId]="ctx.interviewId"
-            [questionId]="q.id"
-            (submittedSuccess)="onVoiceSubmitted()"
-          />
-        }
-      } @else {
-        <textarea
-          rows="10"
-          [(ngModel)]="codeDraft[q.id]"
-          [name]="'c-' + q.id"
-          class="code"
-          placeholder="Paste your solution…"
-          [disabled]="codeSubmittingId === q.id"
-        ></textarea>
-        <div class="row">
-          <button
-            type="button"
-            class="btn primary"
-            (click)="submitCode(q)"
-            [disabled]="codeSubmittingId === q.id"
-          >
-            @if (codeSubmittingId === q.id) {
-              Sending…
-            } @else {
-              Run &amp; submit (Judge0)
-            }
-          </button>
-        </div>
-      }
-
-      @if (lastMsg[q.id]) {
-        <p class="hint">{{ lastMsg[q.id] }}</p>
+      @if (ctx) {
+        <app-voice-answer
+          [interviewSessionId]="ctx.interviewId"
+          [questionId]="q.questionId"
+          (submittedSuccess)="onVoiceSubmitted()"
+        />
       }
     </article>
 
-    <p class="muted footnote">After the last answer you will be taken to your final results.</p>
+    <p class="muted footnote">After the last theory answer you will start the coding round.</p>
     }
   }
 </section>

@@ -40,6 +40,20 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'interview/:id/coding',
+    canActivate: [authGuard, interviewSessionGuard],
+    loadComponent: () =>
+      import('./pages/coding-round/coding-round.component').then((m) => m.CodingRoundComponent),
+  },
+  {
+    path: 'interview/:id/review',
+    canActivate: [authGuard, interviewSessionGuard],
+    loadComponent: () =>
+      import('./pages/interview-review/interview-review.component').then(
+        (m) => m.InterviewReviewComponent,
+      ),
+  },
+  {
     path: 'interview/:id/results',
     canActivate: [authGuard, interviewSessionGuard],
     loadComponent: () =>

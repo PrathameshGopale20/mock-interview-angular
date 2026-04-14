@@ -27,6 +27,7 @@ export class InterviewSetupComponent implements OnInit {
   languageId: number | null = null;
   levelId: number | null = null;
   busy = false;
+  generateBusy = false;
   errorMessage = '';
 
   ngOnInit(): void {
@@ -49,7 +50,7 @@ export class InterviewSetupComponent implements OnInit {
     }
     this.busy = true;
     this.api
-      .setupInterview({ languageId: this.languageId, levelId: this.levelId })
+      .startInterview({ languageId: this.languageId, levelId: this.levelId, theoryQuestionCount: 10 })
       .subscribe({
         next: (res) => {
           this.ctx.save({
@@ -65,6 +66,30 @@ export class InterviewSetupComponent implements OnInit {
         error: (err) => {
           this.busy = false;
           this.errorMessage = err?.error?.message ?? 'Could not start interview.';
+        },
+      });
+  }
+
+  /** Persists new theory questions from OpenAI for the selected language/level (requires OpenAI:ApiKey on API). */
+  generateAiQuestions(): void {
+    this.errorMessage = '';
+    if (this.languageId == null || this.levelId == null || this.generateBusy) {
+      this.errorMessage = 'Select both language and difficulty first.';
+      return;
+    }
+    this.generateBusy = true;
+    this.api
+      .generateQuestions({ languageId: this.languageId, levelId: this.levelId, count: 2 })
+      .subscribe({
+        next: (rows) => {
+          this.generateBusy = false;
+          this.snackBar.open(`Added ${rows.length} AI question(s) to the bank.`, 'OK', { duration: 5000 });
+        },
+        error: (err: { error?: { message?: string } }) => {
+          this.generateBusy = false;
+          this.snackBar.open(err?.error?.message ?? 'Could not generate questions.', 'Dismiss', {
+            duration: 8000,
+          });
         },
       });
   }

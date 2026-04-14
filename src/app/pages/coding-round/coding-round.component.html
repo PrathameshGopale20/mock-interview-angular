@@ -1,0 +1,66 @@
+<section class="page">
+  <p class="back"><a routerLink="/dashboard">← Dashboard</a></p>
+
+  <header class="head">
+    <h1>Coding round</h1>
+    <p class="muted">{{ ctx?.languageName }} · {{ ctx?.levelName }}</p>
+  </header>
+
+  @if (busy) {
+    <p class="muted">Loading coding problem…</p>
+  } @else if (!codingQuestion) {
+    <mat-card appearance="outlined">
+      <p class="muted">No coding question found for this interview.</p>
+      <a routerLink="/interview/setup" class="btn primary">Start again</a>
+    </mat-card>
+  } @else {
+    <mat-card appearance="outlined" class="card">
+      <h2>Problem</h2>
+      <p class="problem">{{ codingQuestion.text }}</p>
+    </mat-card>
+
+    <mat-card appearance="outlined" class="card">
+      <div class="editor-row">
+        <app-code-editor
+          [languageName]="ctx?.languageName ?? 'plaintext'"
+          [value]="code"
+          (valueChange)="code = $event"
+          [disabled]="submitting"
+        />
+      </div>
+
+      <div class="io">
+        <label class="muted">Custom stdin (optional)</label>
+        <textarea [(ngModel)]="stdin" rows="3" class="stdin" [disabled]="submitting"></textarea>
+      </div>
+
+      <div class="actions">
+        <button mat-stroked-button type="button" (click)="runCode()" [disabled]="running || submitting">
+          @if (running) { Running… } @else { Run code }
+        </button>
+        <button mat-flat-button color="primary" type="button" (click)="submitCode()" [disabled]="submitting">
+          @if (submitting) {
+            <mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner>
+            Submitting…
+          } @else {
+            Submit code
+          }
+        </button>
+      </div>
+
+      @if (runOutput) {
+        <div class="out">
+          <div class="muted">Stdout</div>
+          <pre class="pre">{{ runOutput }}</pre>
+        </div>
+      }
+      @if (runError) {
+        <div class="out error">
+          <div class="muted">Errors</div>
+          <pre class="pre">{{ runError }}</pre>
+        </div>
+      }
+    </mat-card>
+  }
+</section>
+

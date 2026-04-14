@@ -17,6 +17,24 @@
       <a routerLink="/interview/setup" class="btn primary">Start mock interview</a>
     </div>
   } @else {
+    @if (trends.length > 0) {
+      <div class="trends card">
+        <h2>Score trend by month</h2>
+        <p class="muted">Average final score for completed interviews (UTC month).</p>
+        <ul class="trend-list">
+          @for (t of trends; track t.period) {
+            <li>
+              <span class="period">{{ t.period }}</span>
+              <span class="bar-wrap" [style.--pct]="t.averageFinalScore + '%'">
+                <span class="bar"></span>
+              </span>
+              <span class="avg">{{ t.averageFinalScore }}% (n={{ t.interviewCount }})</span>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+
     <div class="table-wrap card">
       <table>
         <thead>

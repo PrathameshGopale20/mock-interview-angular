@@ -41,3 +41,10 @@ select {
   background: var(--mit-input-bg);
   color: inherit;
 }
+
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}

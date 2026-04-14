@@ -31,6 +31,12 @@ export interface InterviewSetupRequest {
   levelId: number;
 }
 
+export interface InterviewStartRequest {
+  languageId: number;
+  levelId: number;
+  theoryQuestionCount?: number;
+}
+
 export interface InterviewSetupResponse {
   interviewId: number;
   languageId: number;
@@ -51,6 +57,20 @@ export interface QuestionDto {
   questionType: QuestionType;
   languageId: number;
   levelId: number;
+}
+
+export interface InterviewQuestionItemDto {
+  order: number;
+  questionId: number;
+  text: string;
+  questionType: QuestionType;
+}
+
+export interface InterviewQuestionsResponseDto {
+  interviewId: number;
+  totalQuestions: number;
+  theoryQuestionsCount: number;
+  questions: InterviewQuestionItemDto[];
 }
 
 export interface VoiceMetricsDto {
@@ -84,6 +104,19 @@ export interface CodeSubmitRequest {
   interviewSessionId: number;
   questionId: number;
   sourceCode: string;
+}
+
+export interface CodeRunRequest {
+  interviewSessionId: number;
+  questionId: number;
+  sourceCode: string;
+  stdin?: string | null;
+}
+
+export interface CodeRunResponse {
+  stdout?: string | null;
+  stderr?: string | null;
+  compileOutput?: string | null;
 }
 
 export interface TestCaseResultDto {
@@ -129,6 +162,56 @@ export interface InterviewHistoryItemDto {
   finalScore: number | null;
   feedback: string | null;
   improvementSuggestions: string | null;
+}
+
+export interface ScoreTrendPointDto {
+  period: string;
+  averageFinalScore: number;
+  interviewCount: number;
+}
+
+export interface GenerateQuestionsRequest {
+  languageId: number;
+  levelId: number;
+  count?: number;
+}
+
+export interface TheoryReviewItemDto {
+  order: number;
+  questionId: number;
+  questionText: string;
+  answerScore: number;
+  voiceScore: number;
+  answerFeedback?: string | null;
+  voiceFeedback?: string | null;
+}
+
+export interface CodingReviewDto {
+  questionId: number;
+  problemStatement: string;
+  codeScore: number;
+  testCasesPassed: number;
+  testCasesTotal: number;
+  testCases: TestCaseResultDto[];
+  suggestions?: string | null;
+}
+
+export interface ReviewSummaryDto {
+  totalQuestions: number;
+  theoryQuestionsCount: number;
+  averageAnswerScore: number;
+  averageVoiceScore: number;
+  codeScore: number;
+  finalScore: number;
+  overallFeedback?: string | null;
+  improvementSuggestions?: string | null;
+}
+
+export interface InterviewReviewResponseDto {
+  interviewId: number;
+  summary: ReviewSummaryDto;
+  theory: TheoryReviewItemDto[];
+  coding?: CodingReviewDto | null;
 }
 
 export interface ApiErrorBody {
