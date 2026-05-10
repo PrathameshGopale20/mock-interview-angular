@@ -9,7 +9,11 @@ import {
   JUST_STARTED_INTERVIEW_KEY,
 } from '../../core/interview-context.service';
 import { InterviewApiService } from '../../services/interview-api.service';
-import { InterviewSetupResponse, QuestionDto, QuestionType } from '../../models/api.models';
+import {
+  InterviewQuestionItemDto,
+  InterviewSetupResponse,
+  QuestionType,
+} from '../../models/api.models';
 
 @Component({
   selector: 'app-interview-session',
@@ -28,14 +32,13 @@ export class InterviewSessionComponent implements OnInit {
   readonly QuestionType = QuestionType;
 
   ctx: InterviewContext | null = this.ctxService.load();
-  questions: QuestionDto[] = [];
-  /** Index of the question currently shown (one at a time). */
+  /** Locked plan for this interview (language + level filtered on the server). */
+  questions: InterviewQuestionItemDto[] = [];
   stepIndex = 0;
   loading = true;
   loadError = '';
 
   codeDraft: Record<number, string> = {};
-  lastMsg: Record<number, string> = {};
   codeSubmittingId: number | null = null;
 
   ngOnInit(): void {
@@ -50,7 +53,7 @@ export class InterviewSessionComponent implements OnInit {
       justStartedRaw != null && justStartedRaw === String(id) && this.ctx.interviewId === id;
     if (skipSessionGet) {
       sessionStorage.removeItem(JUST_STARTED_INTERVIEW_KEY);
-      this.applySessionFromContextAndLoadQuestions();
+      this.loadLockedQuestions(id);
       return;
     }
 
@@ -64,7 +67,7 @@ export class InterviewSessionComponent implements OnInit {
           levelName: session.levelName,
         });
         this.ctx = this.ctxService.load();
-        this.loadQuestionsForSession(session.languageId, session.levelId);
+        this.loadLockedQuestions(id);
       },
       error: () => {
         this.ctxService.clear();
@@ -81,32 +84,27 @@ export class InterviewSessionComponent implements OnInit {
     });
   }
 
-  /** When we just created this session via setup, context already matches the DB row. */
-  private applySessionFromContextAndLoadQuestions(): void {
-    if (!this.ctx) {
-      return;
-    }
-    this.loadQuestionsForSession(this.ctx.languageId, this.ctx.levelId);
-  }
-
-  private loadQuestionsForSession(languageId: number, levelId: number): void {
-    this.api.getQuestions(languageId, levelId).subscribe({
-      next: (q) => {
-        this.questions = q;
-        for (const x of q) {
-          this.codeDraft[x.id] = '';
+  private loadLockedQuestions(interviewId: number): void {
+    this.api.getInterviewQuestions(interviewId).subscribe({
+      next: (res) => {
+        this.questions = [...res.questions].sort((a, b) => a.order - b.order);
+        for (const q of this.questions) {
+          if (q.questionType === QuestionType.Coding) {
+            this.codeDraft[q.questionId] = '';
+          }
         }
         this.stepIndex = 0;
         this.loading = false;
       },
       error: () => {
-        this.loadError = 'Failed to load questions.';
+        this.loadError =
+          'Could not load locked questions for this interview. Start a new interview using “Start interview” on setup (uses the locked-question flow).';
         this.loading = false;
       },
     });
   }
 
-  get currentQuestion(): QuestionDto | null {
+  get currentQuestion(): InterviewQuestionItemDto | null {
     return this.questions[this.stepIndex] ?? null;
   }
 
@@ -132,35 +130,30 @@ export class InterviewSessionComponent implements OnInit {
     this.goToNextOrResults();
   }
 
-  submitCode(q: QuestionDto): void {
+  submitCode(q: InterviewQuestionItemDto): void {
     if (!this.ctx || this.codeSubmittingId != null) {
       return;
     }
-    const code = (this.codeDraft[q.id] ?? '').trim();
+    const code = (this.codeDraft[q.questionId] ?? '').trim();
     if (!code) {
-      this.lastMsg[q.id] = 'Paste your code.';
+      this.snackBar.open('Enter your code before submitting.', 'Dismiss', { duration: 4000 });
       return;
     }
-    this.codeSubmittingId = q.id;
-    this.lastMsg[q.id] = '';
+    this.codeSubmittingId = q.questionId;
     this.api
       .submitCode({
         interviewSessionId: this.ctx.interviewId,
-        questionId: q.id,
+        questionId: q.questionId,
         sourceCode: code,
       })
       .subscribe({
-        next: (res) => {
+        next: () => {
           this.codeSubmittingId = null;
-          this.lastMsg[q.id] = `Tests: ${res.testCasesPassed}/${res.testCasesTotal} (${res.codeScorePercent}%)`;
-          this.snackBar.open('Code submitted.', 'OK', { duration: 2500 });
           this.goToNextOrResults();
         },
         error: (err: { error?: { message?: string } }) => {
           this.codeSubmittingId = null;
-          const msg = err?.error?.message ?? 'Code run failed.';
-          this.lastMsg[q.id] = msg;
-          this.snackBar.open(msg, 'Dismiss', { duration: 8000 });
+          this.snackBar.open(err?.error?.message ?? 'Code submit failed.', 'Dismiss', { duration: 8000 });
         },
       });
   }

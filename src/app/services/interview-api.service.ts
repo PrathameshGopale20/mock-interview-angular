@@ -8,8 +8,10 @@ import {
   CodeSubmitResponse,
   EvaluationResultDto,
   InterviewHistoryItemDto,
+  InterviewQuestionsResponseDto,
   InterviewSetupRequest,
   InterviewSetupResponse,
+  InterviewStartRequest,
   LanguageDto,
   LevelDto,
   LoginRequest,
@@ -45,9 +47,23 @@ export class InterviewApiService {
     return this.http.post<InterviewSetupResponse>(`${this.base}/interviews/setup`, body);
   }
 
+  /**
+   * Starts an interview with a locked question set (theory + coding) for the chosen language/difficulty.
+   * Prefer this over setupInterview for the main candidate flow.
+   */
+  startInterview(body: InterviewStartRequest): Observable<InterviewSetupResponse> {
+    return this.http.post<InterviewSetupResponse>(`${this.base}/interviews/start`, body);
+  }
+
   /** Confirms interview session exists for the logged-in user. */
   getInterviewSession(interviewSessionId: number): Observable<InterviewSetupResponse> {
     return this.http.get<InterviewSetupResponse>(`${this.base}/interviews/${interviewSessionId}`);
+  }
+
+  getInterviewQuestions(interviewSessionId: number): Observable<InterviewQuestionsResponseDto> {
+    return this.http.get<InterviewQuestionsResponseDto>(
+      `${this.base}/interviews/${interviewSessionId}/questions`,
+    );
   }
 
   getQuestions(languageId: number, levelId: number): Observable<QuestionDto[]> {
@@ -89,5 +105,9 @@ export class InterviewApiService {
 
   getDashboardHistory(): Observable<InterviewHistoryItemDto[]> {
     return this.http.get<InterviewHistoryItemDto[]>(`${this.base}/dashboard/history`);
+  }
+
+  deleteInterviewHistory(interviewId: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/dashboard/history/${interviewId}`);
   }
 }

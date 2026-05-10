@@ -1,67 +1,139 @@
-<section class="page">
-  <header class="head">
-    <div>
+<section class="dash-page">
+  <div class="dash-bg" aria-hidden="true"></div>
+
+  <header class="dash-header">
+    <div class="dash-title-block">
+      <p class="eyebrow">Overview</p>
       <h1>Dashboard</h1>
-      <p class="muted">Signed in as {{ auth.user()?.email }}</p>
+      <p class="sub">Signed in as <span class="email">{{ auth.user()?.email }}</span></p>
     </div>
-    <a routerLink="/interview/setup" class="btn primary">Start mock interview</a>
+    <a mat-flat-button color="primary" class="cta" routerLink="/interview/setup">
+      <mat-icon>play_circle</mat-icon>
+      Start mock interview
+    </a>
   </header>
 
+  @if (!loading && history.length > 0) {
+    <div class="stat-row">
+      <mat-card class="stat-card" appearance="outlined">
+        <span class="stat-label">Sessions</span>
+        <span class="stat-value">{{ history.length }}</span>
+      </mat-card>
+      <mat-card class="stat-card" appearance="outlined">
+        <span class="stat-label">Completed</span>
+        <span class="stat-value">{{ completedCount }}</span>
+      </mat-card>
+      <mat-card class="stat-card accent" appearance="outlined">
+        <span class="stat-label">Avg. final score</span>
+        <span class="stat-value">{{ averageFinal != null ? averageFinal + '%' : '—' }}</span>
+      </mat-card>
+    </div>
+  }
+
   @if (loading) {
-    <p class="muted">Loading history…</p>
+    <mat-card class="state-card" appearance="outlined">
+      <div class="loading-row">
+        <mat-progress-spinner diameter="36" mode="indeterminate" />
+        <span>Loading your interview history…</span>
+      </div>
+    </mat-card>
   } @else if (loadError) {
-    <div class="alert error">{{ loadError }}</div>
+    <mat-card class="state-card error" appearance="outlined">{{ loadError }}</mat-card>
   } @else if (history.length === 0) {
-    <div class="empty card">
-      <p>No interviews yet. Start your first session.</p>
-      <a routerLink="/interview/setup" class="btn primary">Start mock interview</a>
-    </div>
+    <mat-card class="empty-card" appearance="outlined">
+      <mat-icon class="empty-icon">history_edu</mat-icon>
+      <h2>No interviews yet</h2>
+      <p>Start a session to see scores, feedback, and progress here.</p>
+      <a mat-stroked-button color="primary" routerLink="/interview/setup">Start mock interview</a>
+    </mat-card>
   } @else {
-    <div class="table-wrap card">
-      <table>
-        <thead>
-          <tr>
-            <th>When</th>
-            <th>Language</th>
-            <th>Level</th>
-            <th>Answer</th>
-            <th>Voice</th>
-            <th>Final</th>
-            <th>Feedback</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (row of history; track row.interviewId) {
+    <mat-card class="table-card" appearance="outlined">
+      <div class="table-card-head">
+        <h2>Interview history</h2>
+        <p class="muted">Hover a row for quick context. Delete removes the session and all stored answers for it.</p>
+      </div>
+      <mat-divider />
+      <div class="table-scroll">
+        <table class="history-table">
+          <thead>
             <tr>
-              <td>{{ row.startedAt | date: 'medium' }}</td>
-              <td>{{ row.languageName }}</td>
-              <td>{{ row.levelName }}</td>
-              <td>
-                @if (row.answerScore != null) {
-                  {{ row.answerScore }}
-                } @else {
-                  <span class="muted">—</span>
-                }
-              </td>
-              <td>
-                @if (row.voiceScore != null) {
-                  {{ row.voiceScore }}
-                } @else {
-                  <span class="muted">—</span>
-                }
-              </td>
-              <td>
-                @if (row.finalScore != null) {
-                  {{ row.finalScore }}
-                } @else {
-                  <span class="muted">—</span>
-                }
-              </td>
-              <td class="feedback">{{ row.feedback ?? '—' }}</td>
+              <th>When</th>
+              <th>Stack</th>
+              <th>Level</th>
+              <th class="num">Answer</th>
+              <th class="num">Voice</th>
+              <th class="num">Code</th>
+              <th class="num">Final</th>
+              <th>Feedback</th>
+              <th class="actions-col"></th>
             </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            @for (row of history; track row.interviewId) {
+              <tr
+                class="data-row"
+                [class.confirm-open]="confirmDeleteId === row.interviewId"
+                [class.is-deleting]="deletingId === row.interviewId"
+              >
+                <td class="when">{{ row.startedAt | date: 'medium' }}</td>
+                <td>
+                  <span class="chip chip-lang">{{ row.languageName }}</span>
+                </td>
+                <td>
+                  <span class="chip chip-level">{{ row.levelName }}</span>
+                </td>
+                <td class="num">{{ row.answerScore ?? '—' }}</td>
+                <td class="num">{{ row.voiceScore ?? '—' }}</td>
+                <td class="num">{{ row.codeScore ?? '—' }}</td>
+                <td class="num">
+                  @if (row.finalScore != null) {
+                    <span class="final-pill">{{ row.finalScore }}</span>
+                  } @else {
+                    <span class="muted">—</span>
+                  }
+                </td>
+                <td class="feedback" [matTooltip]="row.feedback ?? ''" matTooltipShowDelay="400">
+                  {{ row.feedback ?? '—' }}
+                </td>
+                <td class="actions-col">
+                  @if (confirmDeleteId === row.interviewId) {
+                    <div class="confirm-actions">
+                      <button
+                        mat-stroked-button
+                        color="warn"
+                        type="button"
+                        (click)="executeDelete(row)"
+                        [disabled]="deletingId === row.interviewId"
+                      >
+                        @if (deletingId === row.interviewId) {
+                          <mat-progress-spinner diameter="18" mode="indeterminate" />
+                        } @else {
+                          Delete
+                        }
+                      </button>
+                      <button mat-button type="button" (click)="cancelDelete()" [disabled]="deletingId === row.interviewId">
+                        Cancel
+                      </button>
+                    </div>
+                  } @else {
+                    <button
+                      mat-icon-button
+                      type="button"
+                      class="delete-btn"
+                      matTooltip="Remove from history"
+                      matTooltipPosition="left"
+                      (click)="requestDelete(row)"
+                      [disabled]="deletingId != null"
+                    >
+                      <mat-icon>delete_outline</mat-icon>
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </mat-card>
   }
 </section>

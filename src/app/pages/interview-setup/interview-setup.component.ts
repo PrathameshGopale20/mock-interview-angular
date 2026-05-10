@@ -49,9 +49,14 @@ export class InterviewSetupComponent implements OnInit {
     }
     this.busy = true;
     this.api
-      .setupInterview({ languageId: this.languageId, levelId: this.levelId })
+      .startInterview({
+        languageId: this.languageId,
+        levelId: this.levelId,
+        theoryQuestionCount: 10,
+      })
       .subscribe({
         next: (res) => {
+          this.busy = false;
           this.ctx.save({
             interviewId: res.interviewId,
             languageId: res.languageId,

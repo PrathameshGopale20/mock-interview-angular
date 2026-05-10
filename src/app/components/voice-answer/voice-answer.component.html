@@ -4,6 +4,13 @@
   } @else {
     <p class="status">{{ statusLine }}</p>
 
+    @if (state === 'recording' || state === 'ready_to_submit') {
+      <div class="transcript-panel">
+        <div class="transcript-label">What we heard</div>
+        <pre class="transcript" [class.dim]="state === 'ready_to_submit'">{{ displayTranscript || '…' }}</pre>
+      </div>
+    }
+
     @if (state === 'recording') {
       <mat-progress-bar mode="determinate" [value]="progressFraction * 100" class="time-bar"></mat-progress-bar>
       <div class="timer-row">
