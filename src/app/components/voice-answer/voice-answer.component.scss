@@ -10,6 +10,38 @@
   color: rgba(232, 236, 244, 0.9);
 }
 
+.transcript-panel {
+  margin: 0 0 0.85rem;
+}
+
+.transcript-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.65;
+  margin-bottom: 0.35rem;
+}
+
+.transcript {
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(232, 236, 244, 0.95);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.transcript.dim {
+  opacity: 0.92;
+}
+
 .warn {
   color: #fecaca;
   margin: 0;

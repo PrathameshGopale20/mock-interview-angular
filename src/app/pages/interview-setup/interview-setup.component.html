@@ -1,6 +1,6 @@
 <section class="page">
   <h1>Interview setup</h1>
-  <p class="muted">Choose stack and difficulty — matches <code>POST /api/interviews/setup</code>.</p>
+  <p class="muted">Choose stack and difficulty — uses <code>POST /api/interviews/start</code> (locked questions for that language/level only).</p>
 
   @if (errorMessage) {
     <div class="alert error">{{ errorMessage }}</div>

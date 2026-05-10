@@ -48,6 +48,8 @@ export class VoiceAnswerComponent implements OnDestroy, OnChanges {
   state: VoiceUiState = 'idle';
   elapsedSeconds = 0;
   barHeights: number[] = Array(NUM_BARS).fill(8);
+  /** Shown while recording (final + interim). */
+  liveTranscript = '';
 
   private recognition: SpeechRecognition | null = null;
   private tickInterval: ReturnType<typeof setInterval> | null = null;
@@ -100,14 +102,21 @@ export class VoiceAnswerComponent implements OnDestroy, OnChanges {
   get statusLine(): string {
     switch (this.state) {
       case 'recording':
-        return 'Listening…';
+        return 'Listening… Your words appear below as you speak.';
       case 'ready_to_submit':
-        return 'Review is hidden — tap Submit answer to send your response.';
+        return 'Tap Submit answer to send. Scores and feedback appear only after you complete the full interview.';
       case 'submitting':
         return 'Sending answer…';
       default:
         return 'Tap Start recording, speak your answer, then Stop recording.';
     }
+  }
+
+  get displayTranscript(): string {
+    if (this.state === 'ready_to_submit' || this.state === 'submitting') {
+      return this.pendingTranscript.trim();
+    }
+    return this.liveTranscript;
   }
 
   async startRecording(): Promise<void> {
@@ -146,6 +155,7 @@ export class VoiceAnswerComponent implements OnDestroy, OnChanges {
     this.startedAt = Date.now();
     this.pendingTranscript = '';
     this.pendingMetrics = null;
+    this.liveTranscript = '';
     this.barHeights = Array(NUM_BARS).fill(8);
 
     this.audioContext = new AudioContext();
@@ -192,6 +202,7 @@ export class VoiceAnswerComponent implements OnDestroy, OnChanges {
           }
         }
       }
+      this.syncLiveTranscriptFromEvent(event);
     };
 
     this.recognition.onerror = (ev: SpeechRecognitionErrorEvent) => {
@@ -297,6 +308,7 @@ export class VoiceAnswerComponent implements OnDestroy, OnChanges {
       : 0.5;
 
     this.pendingTranscript = transcript;
+    this.liveTranscript = transcript;
     this.pendingMetrics = {
       durationSeconds: durationSec,
       pauseCount: this.pauseCount,
@@ -326,7 +338,6 @@ export class VoiceAnswerComponent implements OnDestroy, OnChanges {
             this.state = 'ready_to_submit';
             return;
           }
-          this.snackBar.open('Answer submitted.', 'OK', { duration: 2500 });
           this.hardReset();
           this.submittedSuccess.emit();
         },
@@ -414,7 +425,21 @@ export class VoiceAnswerComponent implements OnDestroy, OnChanges {
     this.elapsedSeconds = 0;
     this.pendingTranscript = '';
     this.pendingMetrics = null;
+    this.liveTranscript = '';
     this.barHeights = Array(NUM_BARS).fill(8);
+  }
+
+  private syncLiveTranscriptFromEvent(event: SpeechRecognitionEvent): void {
+    let interim = '';
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const r = event.results[i];
+      if (!r.isFinal) {
+        interim += r[0]?.transcript ?? '';
+      }
+    }
+    const finals = this.transcriptParts.join(' ').replace(/\s+/g, ' ').trim();
+    const piece = interim.replace(/\s+/g, ' ').trim();
+    this.liveTranscript = [finals, piece].filter(Boolean).join(' ').trim();
   }
 
   ngOnDestroy(): void {

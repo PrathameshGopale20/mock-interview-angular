@@ -31,6 +31,13 @@ export interface InterviewSetupRequest {
   levelId: number;
 }
 
+export interface InterviewStartRequest {
+  languageId: number;
+  levelId: number;
+  /** 1–15; server caps by how many theory rows exist in the DB for this language/level. */
+  theoryQuestionCount?: number;
+}
+
 export interface InterviewSetupResponse {
   interviewId: number;
   languageId: number;
@@ -51,6 +58,20 @@ export interface QuestionDto {
   questionType: QuestionType;
   languageId: number;
   levelId: number;
+}
+
+export interface InterviewQuestionItemDto {
+  order: number;
+  questionId: number;
+  text: string;
+  questionType: QuestionType;
+}
+
+export interface InterviewQuestionsResponseDto {
+  interviewId: number;
+  totalQuestions: number;
+  theoryQuestionsCount: number;
+  questions: InterviewQuestionItemDto[];
 }
 
 export interface VoiceMetricsDto {
